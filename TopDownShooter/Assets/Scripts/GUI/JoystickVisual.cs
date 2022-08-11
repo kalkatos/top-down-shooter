@@ -9,15 +9,15 @@ namespace Kalkatos.TopDownShooter
         [SerializeField] private GameObject background;
         [SerializeField] private RectTransform stick;
 
-        [SerializeField] private float visualSize;
-
         private Camera canvasCamera;
         private RectTransform myRectTransform;
         private RectTransform backgroundRectTransform;
+        private Vector2 startingPosition;
 
         private void Awake ()
         {
             Joystick.OnJoystickDown += HandleJoystickDown;
+            Joystick.OnJoystickDrag += HandleJoystickDrag;
             Joystick.OnJoystickUp += HandleJoystickUp;
 
             if (canvas == null)
@@ -26,24 +26,26 @@ namespace Kalkatos.TopDownShooter
             background.SetActive(false);
             myRectTransform = (RectTransform)transform;
             backgroundRectTransform = (RectTransform)background.transform;
-            visualSize = Screen.dpi;
         }
 
         private void OnDestroy ()
         {
             Joystick.OnJoystickDown -= HandleJoystickDown;
+            Joystick.OnJoystickDrag -= HandleJoystickDrag;
             Joystick.OnJoystickUp -= HandleJoystickUp;
-        }
-
-        private void Update ()
-        {
-            stick.anchoredPosition = Joystick.CurrentInput * visualSize;
         }
 
         private void HandleJoystickDown (Vector2 position)
         {
             backgroundRectTransform.anchoredPosition = ScreenToAnchoredPosition(myRectTransform, position);
             background.SetActive(true);
+            startingPosition = position;
+        }
+
+        private void HandleJoystickDrag (Vector2 position)
+        {
+            position = startingPosition + Vector2.ClampMagnitude(position - startingPosition, Joystick.ScreenSize);
+            stick.anchoredPosition = ScreenToAnchoredPosition(backgroundRectTransform, position);
         }
 
         private void HandleJoystickUp (Vector2 position)

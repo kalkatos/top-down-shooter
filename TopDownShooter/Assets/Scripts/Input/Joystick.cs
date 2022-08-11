@@ -10,36 +10,39 @@ namespace Kalkatos.TopDownShooter
         public static Joystick Instance;
 
         public static event JoystickEvent OnJoystickDown;
+        public static event JoystickEvent OnJoystickDrag;
         public static event JoystickEvent OnJoystickUp;
 
-        [SerializeField] private float screenSize;
+        [SerializeField] private float screenSizeInInches;
 
         public Vector2 ScreenInput;
         public Vector2 currentInput;
         private bool isTouching;
         private Vector2 inputStartPos;
+        private float size;
 
-        public static float ScreenSize => Instance.screenSize;
+        public static float ScreenSize => Instance.size;
         public static Vector2 CurrentInput => Instance.currentInput;
         public static bool IsTouching => Instance.isTouching;
 
         private void Awake ()
         {
             Instance = this;
-            screenSize = Screen.dpi;
+            size = Screen.dpi * (screenSizeInInches / 2);
         }
 
         public void OnPointerDown (PointerEventData eventData)
         {
-            inputStartPos = eventData.position;
             OnJoystickDown?.Invoke(eventData.position);
+            inputStartPos = eventData.position;
             isTouching = true;
         }
 
         public void OnDrag (PointerEventData eventData)
         {
+            OnJoystickDrag?.Invoke(eventData.position);
             ScreenInput = eventData.position - inputStartPos;
-            currentInput = Vector3.ClampMagnitude(eventData.position - inputStartPos, screenSize) / screenSize;
+            currentInput = Vector3.ClampMagnitude(eventData.position - inputStartPos, size) / size;
         }
 
         public void OnPointerUp (PointerEventData eventData)
