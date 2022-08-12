@@ -19,13 +19,20 @@ namespace Kalkatos.TopDownShooter
 
         private void FixedUpdate ()
         {
+            Vector3 newVelocity = rb.velocity;
             if (canMove && movement != Vector3.zero)
             {
                 myTransform.forward = movement;
-                rb.velocity = myTransform.forward * speed;
+                newVelocity.x = movement.x * speed;
+                newVelocity.z = movement.z * speed;
+                rb.velocity = newVelocity;
             }
             else
-                rb.velocity = Vector3.zero;
+            {
+                newVelocity.x = 0;
+                newVelocity.z = 0;
+                rb.velocity = newVelocity; 
+            }
         }
 
         public void SetSpeed (float value)
