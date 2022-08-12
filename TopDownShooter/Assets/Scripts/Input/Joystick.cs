@@ -15,8 +15,7 @@ namespace Kalkatos.TopDownShooter
 
         [SerializeField] private float screenSizeInInches;
 
-        public Vector2 ScreenInput;
-        public Vector2 currentInput;
+        private Vector2 currentInput;
         private bool isTouching;
         private Vector2 inputStartPos;
         private float size;
@@ -41,14 +40,12 @@ namespace Kalkatos.TopDownShooter
         public void OnDrag (PointerEventData eventData)
         {
             OnJoystickDrag?.Invoke(eventData.position);
-            ScreenInput = eventData.position - inputStartPos;
             currentInput = Vector3.ClampMagnitude(eventData.position - inputStartPos, size) / size;
         }
 
         public void OnPointerUp (PointerEventData eventData)
         {
             OnJoystickUp?.Invoke(eventData.position);
-            ScreenInput = Vector2.zero;
             currentInput = Vector2.zero;
             isTouching = false;
         }
